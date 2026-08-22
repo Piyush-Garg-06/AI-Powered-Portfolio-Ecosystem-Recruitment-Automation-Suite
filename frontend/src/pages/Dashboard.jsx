@@ -121,6 +121,9 @@ export default function Dashboard({ user, onLogout, theme, toggleTheme }) {
 
     if (!targetUser) return;
 
+    // Developer should have synced their profile first
+    if (user?.role === "developer" && !portfolioData) return;
+
     if (activeTab === "interview-arena" || activeTab === "interview-kit") {
       if (!interviewData) {
         fetchMockInterview(targetUser);
@@ -131,7 +134,7 @@ export default function Dashboard({ user, onLogout, theme, toggleTheme }) {
         fetchCodeAudit(targetUser);
       }
     }
-  }, [activeTab, searchResultData, user, intentData]);
+  }, [activeTab, searchResultData, user, intentData, portfolioData]);
 
   const fetchExistingProfile = async (uname) => {
     setLoading(true);
@@ -187,21 +190,25 @@ export default function Dashboard({ user, onLogout, theme, toggleTheme }) {
       setInterviewData(res.data.questions || res.data);
     } catch (err) {
       console.error(err);
-      alert("Mock interview questions fetch failed! ❌");
+      setInterviewData([]);
+      alert(err.response?.data?.error || "Mock interview questions fetch failed! ❌");
     } finally {
       setInterviewLoading(false);
     }
   };
 
-  const fetchCodeAudit = async (targetUser) => {
+  const fetchCodeAudit = async (targetUser, force = false) => {
     setAuditLoading(true);
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(`${API_BASE_URL}/api/ai/code-audit`,
-        { targetUsername: targetUser },
+        { targetUsername: targetUser, force },
         { headers: { Authorization: token ? `Bearer ${token}` : "" } }
       );
       setAuditData(res.data.auditReport || res.data);
+      if (force) {
+        alert("Bypassed cache and performed fresh code quality audit! 🔄");
+      }
     } catch (err) {
       console.error(err);
       alert("Code audit report fetch failed! ❌");
@@ -288,13 +295,13 @@ export default function Dashboard({ user, onLogout, theme, toggleTheme }) {
     navigator.clipboard.writeText(portfolioUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+    window.open(portfolioUrl, "_blank");
   };
 
   const previewData = searchResultData || portfolioData;
 
   const devTabs = [
     { id: "my-profile", label: "Profile Setup & Sync", icon: User },
-    { id: "self-mentor", label: "Self-Improvement Bot", icon: MessageSquare },
     { id: "interview-arena", label: "Mock Interview Arena", icon: Mic },
     { id: "code-quality", label: "Code Quality Analytics", icon: ShieldAlert },
     { id: "hiring-intent", label: "Hiring Intent Analytics", icon: TrendingUp },
@@ -340,8 +347,8 @@ export default function Dashboard({ user, onLogout, theme, toggleTheme }) {
         </div>
 
         {/* Stats Grid Card Section */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 p-5 rounded-2xl flex flex-col justify-between shadow-sm relative overflow-hidden text-left">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 p-6 md:p-7 rounded-2xl flex flex-col justify-between shadow-sm relative overflow-hidden text-left">
             <div>
               <span className="text-[10px] text-slate-500 dark:text-zinc-500 font-bold uppercase tracking-wider">Synced Repos</span>
               <p className="text-2xl font-black text-slate-900 dark:text-white mt-1.5">{totalRepos} Projects</p>
@@ -350,7 +357,7 @@ export default function Dashboard({ user, onLogout, theme, toggleTheme }) {
             <BookOpen className="w-8 h-8 text-indigo-500/10 absolute right-4 top-4" />
           </div>
 
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 p-5 rounded-2xl flex flex-col justify-between shadow-sm relative overflow-hidden text-left">
+          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 p-6 md:p-7 rounded-2xl flex flex-col justify-between shadow-sm relative overflow-hidden text-left">
             <div>
               <span className="text-[10px] text-slate-500 dark:text-zinc-500 font-bold uppercase tracking-wider">Stars Earned</span>
               <p className="text-2xl font-black text-slate-900 dark:text-white mt-1.5">{totalStars}</p>
@@ -359,7 +366,7 @@ export default function Dashboard({ user, onLogout, theme, toggleTheme }) {
             <Star className="w-8 h-8 text-amber-500/10 absolute right-4 top-4" />
           </div>
 
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 p-5 rounded-2xl flex flex-col justify-between shadow-sm relative overflow-hidden text-left">
+          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 p-6 md:p-7 rounded-2xl flex flex-col justify-between shadow-sm relative overflow-hidden text-left">
             <div>
               <span className="text-[10px] text-slate-500 dark:text-zinc-500 font-bold uppercase tracking-wider">Primary Tech</span>
               <p className="text-2xl font-black text-slate-900 dark:text-white mt-1.5 truncate pr-6">{primaryTech}</p>
@@ -368,7 +375,7 @@ export default function Dashboard({ user, onLogout, theme, toggleTheme }) {
             <Terminal className="w-8 h-8 text-emerald-500/10 absolute right-4 top-4" />
           </div>
 
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 p-5 rounded-2xl flex flex-col justify-between shadow-sm relative overflow-hidden text-left">
+          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 p-6 md:p-7 rounded-2xl flex flex-col justify-between shadow-sm relative overflow-hidden text-left">
             <div>
               <span className="text-[10px] text-slate-500 dark:text-zinc-500 font-bold uppercase tracking-wider">Sync Status</span>
               <p className={`text-xl font-black mt-1.5 ${portfolioData ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
@@ -381,8 +388,8 @@ export default function Dashboard({ user, onLogout, theme, toggleTheme }) {
         </div>
 
         {/* Two-Column Settings & Overview Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
-          <div className="lg:col-span-2 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 p-6 rounded-2xl shadow-sm space-y-5 text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+          <div className="lg:col-span-2 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 p-8 rounded-2xl shadow-sm space-y-6 text-left">
             <div className="space-y-1">
               <h2 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                 <UserCheck className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
@@ -436,7 +443,7 @@ export default function Dashboard({ user, onLogout, theme, toggleTheme }) {
             </form>
           </div>
 
-          <div className="lg:col-span-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 p-6 rounded-2xl shadow-sm text-left">
+          <div className="lg:col-span-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 p-8 rounded-2xl shadow-sm text-left">
             {portfolioData ? (
               <CandidateOverview data={portfolioData} />
             ) : (
@@ -471,11 +478,25 @@ export default function Dashboard({ user, onLogout, theme, toggleTheme }) {
   };
 
   const renderInterviewArenaTab = () => {
+    if (user?.role === "developer" && !portfolioData) {
+      return (
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 p-8 rounded-2xl text-center shadow-sm space-y-4">
+          <div className="w-12 h-12 bg-indigo-500/10 text-indigo-500 rounded-2xl flex items-center justify-center mx-auto text-2xl">
+            🔄
+          </div>
+          <h3 className="text-sm font-bold text-slate-800 dark:text-zinc-200">Profile Sync Required</h3>
+          <p className="text-xs text-slate-500 dark:text-zinc-400 max-w-xs mx-auto leading-relaxed">
+            Please sync your GitHub profile under the <strong>Profile Setup & Sync</strong> tab to generate your AI Mock Interview questions.
+          </p>
+        </div>
+      );
+    }
     return (
       <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 p-6 rounded-2xl shadow-sm">
         <MockInterviewArena
           questions={interviewData}
           loading={interviewLoading}
+          targetUsername={user.username}
           onRefresh={() => fetchMockInterview(user.username)}
         />
       </div>
@@ -483,12 +504,25 @@ export default function Dashboard({ user, onLogout, theme, toggleTheme }) {
   };
 
   const renderCodeQualityTab = () => {
+    if (user?.role === "developer" && !portfolioData) {
+      return (
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 p-8 rounded-2xl text-center shadow-sm space-y-4">
+          <div className="w-12 h-12 bg-indigo-500/10 text-indigo-500 rounded-2xl flex items-center justify-center mx-auto text-2xl">
+            🛡️
+          </div>
+          <h3 className="text-sm font-bold text-slate-800 dark:text-zinc-200">Profile Sync Required</h3>
+          <p className="text-xs text-slate-500 dark:text-zinc-400 max-w-xs mx-auto leading-relaxed">
+            Please sync your GitHub profile under the <strong>Profile Setup & Sync</strong> tab to run your Code Quality Analytics.
+          </p>
+        </div>
+      );
+    }
     return (
       <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 p-6 rounded-2xl shadow-sm">
         <CodeQualityAnalytics
           auditReport={auditData}
           loading={auditLoading}
-          onRefresh={() => fetchCodeAudit(user.username)}
+          onRefresh={(force) => fetchCodeAudit(user.username, force)}
         />
       </div>
     );
@@ -582,6 +616,7 @@ export default function Dashboard({ user, onLogout, theme, toggleTheme }) {
         <MockInterviewArena
           questions={interviewData}
           loading={interviewLoading}
+          targetUsername={searchResultData?.username}
           onRefresh={() => fetchMockInterview(searchResultData?.username)}
         />
       </div>
@@ -594,7 +629,7 @@ export default function Dashboard({ user, onLogout, theme, toggleTheme }) {
         <CodeQualityAnalytics
           auditReport={auditData}
           loading={auditLoading}
-          onRefresh={() => fetchCodeAudit(searchResultData?.username)}
+          onRefresh={(force) => fetchCodeAudit(searchResultData?.username, force)}
         />
       </div>
     );
@@ -637,7 +672,7 @@ export default function Dashboard({ user, onLogout, theme, toggleTheme }) {
                 </button>
               )}
             </div>
-            
+
             <div className="max-h-64 overflow-y-auto divide-y divide-slate-150 dark:divide-zinc-800/40">
               {notifications.length === 0 ? (
                 <div className="p-6 text-center text-slate-400 dark:text-zinc-500">
@@ -891,7 +926,6 @@ export default function Dashboard({ user, onLogout, theme, toggleTheme }) {
             ) : (
               <div className="w-full text-left">
                 {activeTab === "my-profile" && renderMyProfileTab()}
-                {activeTab === "self-mentor" && renderSelfMentorTab()}
                 {activeTab === "interview-arena" && renderInterviewArenaTab()}
                 {activeTab === "code-quality" && renderCodeQualityTab()}
                 {activeTab === "hiring-intent" && renderHiringIntentTab()}
@@ -909,7 +943,7 @@ export default function Dashboard({ user, onLogout, theme, toggleTheme }) {
         </div>
 
         {/* Floating AI recruiter chatbot */}
-        {activeTab !== "self-mentor" && activeTab !== "eval-assistant" && (user.role !== "recruiter" || previewData) && (
+        {activeTab !== "eval-assistant" && (user.role !== "recruiter" || previewData) && (
           <AIChatbot username={previewData?.username || user.username} ownerName={previewData?.name} />
         )}
       </main>
@@ -947,11 +981,11 @@ export default function Dashboard({ user, onLogout, theme, toggleTheme }) {
               <span className="uppercase text-slate-650 dark:text-zinc-350">{activeToast.company}</span>
             </div>
           </div>
-          
+
           {/* Toast Progress Indicator Bar */}
           <div className="absolute bottom-0 left-0 right-0 h-1 bg-slate-100 dark:bg-zinc-800 rounded-b-2xl overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-indigo-500 to-violet-600" 
+            <div
+              className="h-full bg-gradient-to-r from-indigo-500 to-violet-600"
               style={{ animation: 'shrink 5s linear forwards' }}
             />
           </div>

@@ -1,1 +1,1 @@
-# AI-Powered-Portfolio-Ecosystem-Recruitment-Automation-Suite
+# AI-Powered-Portfolio-Ecosystem-Recruitment-Automation-Suited

@@ -3,6 +3,8 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme inline {
     --font-heading: var(--font-sans);
     --font-sans: 'Geist Variable', sans-serif;
@@ -33,6 +35,52 @@
     --color-card: var(--card);
     --color-foreground: var(--foreground);
     --color-background: var(--background);
+
+    /* Custom Design Tokens mapped for layout stability and text readability */
+    --color-zinc-150: #f4f4f5;
+    --color-zinc-205: #e4e4e7;
+    --color-zinc-350: #d4d4d8;
+    --color-zinc-450: #a1a1aa;
+    --color-zinc-550: #71717a;
+    --color-zinc-650: #71717a;
+    --color-zinc-750: #3f3f46;
+    --color-zinc-805: #27272a;
+    --color-zinc-850: #18181b;
+    --color-zinc-855: #18181b;
+    --color-zinc-950: #09090b;
+
+    --color-slate-350: #cbd5e1;
+    --color-slate-355: #cbd5e1;
+    --color-slate-450: #94a3b8;
+    --color-slate-550: #64748b;
+    --color-slate-555: #64748b;
+    --color-slate-650: #475569;
+    --color-slate-655: #475569;
+    --color-slate-705: #3b4252;
+    --color-slate-750: #334155;
+
+    --color-indigo-450: #818cf8;
+    --color-indigo-550: #6366f1;
+    --color-indigo-555: #6366f1;
+    --color-indigo-650: #4f46e5;
+    --color-indigo-655: #3730a3;
+
+    --color-emerald-400: #34d399;
+    --color-emerald-450: #34d399;
+    --color-emerald-550: #10b981;
+    --color-emerald-555: #10b981;
+
+    --color-teal-450: #2dd4bf;
+    --color-violet-450: #a78bfa;
+
+    --color-amber-450: #fbbf24;
+    --color-amber-500: #f59e0b;
+    --color-amber-650: #d97706;
+
+    --color-rose-450: #f87171;
+    --color-rose-500: #ef4444;
+    --color-rose-550: #f43f5e;
+    --color-rose-555: #ef4444;
 
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);

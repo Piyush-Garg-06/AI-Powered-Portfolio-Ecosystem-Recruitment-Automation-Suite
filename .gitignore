@@ -1,2 +1,53 @@
+# ── Environment Variables (NEVER commit) ──
 .env
-backend/.env
+.env.local
+.env.production
+**/.env
+**/.env.local
+**/.env.production
+
+# ── Node.js ──
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# ── Frontend Build ──
+frontend/dist/
+frontend/.vite/
+
+# ── Python ──
+ai_engine/venv/
+ai_engine/__pycache__/
+ai_engine/**/__pycache__/
+ai_engine/**/*.pyc
+ai_engine/**/*.pyo
+*.pyc
+*.pyo
+*.pyd
+.Python
+.pytest_cache/
+
+# ── AI Model files (large binaries - host separately) ──
+ai_engine/models/*.h5
+ai_engine/models/*.pt
+
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDEs ──
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ── Logs ──
+logs/
+*.log
