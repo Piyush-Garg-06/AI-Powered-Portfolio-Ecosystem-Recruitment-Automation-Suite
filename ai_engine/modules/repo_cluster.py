@@ -1,12 +1,14 @@
+from typing import List
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
 
-def cluster_repositories(repo_texts: list[str]) -> dict:
+def cluster_repositories(repo_texts: List[str]) -> dict:
     """
     Groups repositories into primary skill clusters based on their descriptions.
     Uses TF-IDF for representation and K-Means for clustering.
     """
     cleaned_texts = [txt.strip() for txt in repo_texts if txt and txt.strip()]
+
     
     if not cleaned_texts:
         return {

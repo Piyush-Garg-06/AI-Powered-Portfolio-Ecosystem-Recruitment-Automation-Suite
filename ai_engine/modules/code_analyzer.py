@@ -1,4 +1,5 @@
 import re
+from typing import List
 from radon.complexity import cc_visit
 from radon.metrics import mi_visit
 
@@ -25,9 +26,10 @@ def compute_maintainability(raw_code: str) -> float:
     except Exception:
         return 75.0
 
-def security_scan(raw_code: str) -> list[str]:
+def security_scan(raw_code: str) -> List[str]:
     """Uses Regex to flag hardcoded secrets and unsafe eval() executions."""
     warnings = []
+
     if not raw_code or not raw_code.strip():
         return warnings
 
