@@ -9,7 +9,9 @@ try:
 except Exception as e:
     print(f"SentenceTransformer not available ({e}), falling back to TF-IDF vectorizer.")
     HAS_SENTENCE_TRANSFORMERS = False
+    model = None
     from sklearn.feature_extraction.text import TfidfVectorizer
+
 
 def calculate_ats_match(candidate_text: str, jd_text: str) -> dict:
     """Encodes candidate details and JD into dense embeddings and computes cosine similarity."""
