@@ -97,7 +97,7 @@ router.get('/portfolio/:username', async (req, res) => {
     try {
       const repoTexts = formattedProjects.map(p => `${p.title} ${p.description} ${p.language}`);
       console.log(`[ML Gateway] Classifying developer role for ${username}...`);
-      const mlRes = await axios.post(`${AI_ENGINE_URL}/api/ml/classify-role", { repo_texts: repoTexts });
+      const mlRes = await axios.post(`${AI_ENGINE_URL}/api/ml/classify-role`, { repo_texts: repoTexts });
       if (mlRes.data && mlRes.data.predicted_role) {
         predictedRole = mlRes.data.predicted_role;
         roleConfidence = mlRes.data.confidence_score;
@@ -244,7 +244,7 @@ router.get('/developer/hiring-intent', authMiddleware, async (req, res) => {
 
     console.log(`[Hiring Intent] Sending ${formattedLogs.length} logs to Llama-3 for intent analysis...`);
 
-    const response = await axios.post(`${AI_ENGINE_URL}/api/ml/llm/hiring-intent", {
+    const response = await axios.post(`${AI_ENGINE_URL}/api/ml/llm/hiring-intent`, {
       system_prompt: systemPrompt
     });
 
@@ -389,7 +389,7 @@ router.post('/developer/roadmap', authMiddleware, async (req, res) => {
 
     console.log(`[Roadmap Engine] Groq processing week-by-week transition map for: ${req.user.username}`);
 
-    const response = await axios.post(`${AI_ENGINE_URL}/api/ml/llm/roadmap/generate", {
+    const response = await axios.post(`${AI_ENGINE_URL}/api/ml/llm/roadmap/generate`, {
       system_prompt: systemPrompt
     });
 
@@ -571,7 +571,7 @@ function processDeveloperData(portfolio) {
 `;
 
     // Proxy request to Python Flask server
-    const mlRes = await axios.post(`${AI_ENGINE_URL}/api/ml/code-audit", {
+    const mlRes = await axios.post(`${AI_ENGINE_URL}/api/ml/code-audit`, {
       raw_code: codeToAudit,
       language: isPython ? "python" : "javascript"
     });
@@ -591,7 +591,7 @@ function processDeveloperData(portfolio) {
     Write a brief architectural review of the developer's system design (max 2 short sentences). Keep it highly professional.
     `;
 
-    const response = await axios.post(`${AI_ENGINE_URL}/api/ml/llm/architectural-review", {
+    const response = await axios.post(`${AI_ENGINE_URL}/api/ml/llm/architectural-review`, {
       system_prompt: systemPrompt
     });
 
@@ -674,7 +674,7 @@ router.post('/portfolio/:username/public-ats', async (req, res) => {
     const candidateText = `Name: ${portfolio.name || username}. Bio: ${portfolio.bio}. Role: ${portfolio.predictedRole}. Projects: ` +
       (portfolio.projects || []).slice(0, 6).map(p => `${p.title}: ${p.description ? p.description.substring(0, 100) : ""} (${p.language})`).join(". ");
 
-    const mlRes = await axios.post(`${AI_ENGINE_URL}/api/ml/ats-match", {
+    const mlRes = await axios.post(`${AI_ENGINE_URL}/api/ml/ats-match`, {
       candidate_text: candidateText,
       jd_text: jobDescription
     });
@@ -702,7 +702,7 @@ router.post('/portfolio/:username/public-ats', async (req, res) => {
     ${jobDescription}
     `;
 
-    const response = await axios.post(`${AI_ENGINE_URL}/api/ml/llm/ats-gaps", {
+    const response = await axios.post(`${AI_ENGINE_URL}/api/ml/llm/ats-gaps`, {
       system_prompt: systemPrompt
     });
 

@@ -164,7 +164,7 @@ router.post("/interview/generate", authMiddleware, async (req, res) => {
     `;
 
     // Proxy request to Python Flask server for Llama-3 model generation
-    const response = await axios.post(`${AI_ENGINE_URL}/api/ml/llm/interview/generate", {
+    const response = await axios.post(`${AI_ENGINE_URL}/api/ml/llm/interview/generate`, {
       system_prompt: systemPrompt
     });
 
@@ -228,7 +228,7 @@ router.post("/interview/evaluate", authMiddleware, async (req, res) => {
       }
       `;
 
-      const checkRes = await axios.post(`${AI_ENGINE_URL}/api/ml/llm/interview/evaluate", {
+      const checkRes = await axios.post(`${AI_ENGINE_URL}/api/ml/llm/interview/evaluate`, {
         system_prompt: systemPrompt
       });
 
@@ -285,7 +285,7 @@ router.post("/interview/evaluate", authMiddleware, async (req, res) => {
 
     try {
       console.log("[Viva Evaluation] Forwarding transcript to Python Flask speech-proctor...");
-      const flaskRes = await axios.post(`${AI_ENGINE_URL}/api/ml/speech-proctor", {
+      const flaskRes = await axios.post(`${AI_ENGINE_URL}/api/ml/speech-proctor`, {
         transcript: combinedTranscript,
         duration_sec: durationSeconds || 60
       });
@@ -421,7 +421,7 @@ function processDeveloperData(portfolio) {
 
     // 2. Proxy request to Python Flask server
     console.log(`[ML Gateway] Forwarding code audit request to Flask for ${usernameToAudit}...`);
-    const mlRes = await axios.post(`${AI_ENGINE_URL}/api/ml/code-audit", {
+    const mlRes = await axios.post(`${AI_ENGINE_URL}/api/ml/code-audit`, {
       raw_code: codeToAudit,
       language: language || "javascript"
     });
@@ -442,7 +442,7 @@ function processDeveloperData(portfolio) {
     Write a brief architectural review of the developer's system design (max 2 short sentences). Keep it highly professional.
     `;
 
-    const response = await axios.post(`${AI_ENGINE_URL}/api/ml/llm/architectural-review", {
+    const response = await axios.post(`${AI_ENGINE_URL}/api/ml/llm/architectural-review`, {
       system_prompt: systemPrompt
     });
 
@@ -527,7 +527,7 @@ router.post("/ats-match", authMiddleware, async (req, res) => {
 
     // 2. Call Flask Semantic Cosine Similarity
     console.log(`[ML Gateway] Sending candidate texts to Flask ATS Matcher...`);
-    const mlRes = await axios.post(`${AI_ENGINE_URL}/api/ml/ats-match", {
+    const mlRes = await axios.post(`${AI_ENGINE_URL}/api/ml/ats-match`, {
       candidate_text: candidateText,
       jd_text: jobDescription
     });
