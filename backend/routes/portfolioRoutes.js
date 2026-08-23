@@ -8,7 +8,7 @@ const Track = require('../models/Track');
 const User = require('../models/User');
 const { emitRecruiterActivity } = require('./socketHelpers');
 
-const AI_ENGINE_URL = process.env.AI_ENGINE_URL || `${AI_ENGINE_URL}";
+const AI_ENGINE_URL = process.env.AI_ENGINE_URL || "https://devscale-ai-engine.onrender.com";
 
 // Naya Route: Username ke basis par GitHub profile data lane ke liye
 router.get('/user/:username', async (req, res) => {

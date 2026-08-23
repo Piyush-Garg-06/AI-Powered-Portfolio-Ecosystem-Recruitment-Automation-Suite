@@ -10,7 +10,7 @@ const { emitRecruiterActivity } = require('./socketHelpers');
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const GROQ_MODEL = "groq/compound";
-const AI_ENGINE_URL = process.env.AI_ENGINE_URL || `${AI_ENGINE_URL}";
+const AI_ENGINE_URL = process.env.AI_ENGINE_URL || "https://devscale-ai-engine.onrender.com";
 
 const compactPortfolioProjects = (projects = [], limit = 6) => projects
   .slice(0, limit)
