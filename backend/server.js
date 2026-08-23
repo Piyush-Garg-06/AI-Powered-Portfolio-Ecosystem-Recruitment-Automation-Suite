@@ -71,8 +71,11 @@ app.get("/health", (req, res) => {
   res.json({ status: "healthy", gateway: "Node.js Gateway" });
 });
 
-server.listen(port, () => {
-  console.log(`🚀 Gateway server listening on port ${port}`);
-});
+if (!process.env.VERCEL) {
+  server.listen(port, () => {
+    console.log(`🚀 Gateway server listening on port ${port}`);
+  });
+}
+
 
 module.exports = app;
